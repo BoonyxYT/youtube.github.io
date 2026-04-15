@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Nebulosa · Juego de sombras</title>
+    <title>✨ Portal Sombrío · Juego de los 10 Niveles ✨</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
         }
 
         body {
-            background: radial-gradient(circle at 20% 10%, #0a0f2a, #020115);
+            background: radial-gradient(circle at 20% 10%, #0a0f2a, #010013);
             font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif;
             padding: 2rem 1.5rem;
             display: flex;
@@ -22,100 +22,78 @@
             min-height: 100vh;
         }
 
-        /* contenedor principal */
+        /* contenedor principal con glassmorphism */
         .main-container {
             max-width: 1300px;
             width: 100%;
-            background: rgba(8, 10, 28, 0.5);
-            backdrop-filter: blur(4px);
+            background: rgba(8, 10, 35, 0.55);
+            backdrop-filter: blur(5px);
             border-radius: 3rem;
             padding: 1.8rem;
-            border: 1px solid rgba(130, 90, 230, 0.5);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            border: 1px solid rgba(130, 90, 240, 0.6);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            transition: all 0.2s;
         }
 
-        /* zona superior: botón + mensaje personal */
-        .top-bar {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
+        /* BOTÓN DE ENTRADA (grande y llamativo) */
+        .entry-button-container {
+            text-align: center;
             margin-bottom: 2rem;
-            background: rgba(0, 0, 0, 0.35);
-            padding: 0.8rem 1.5rem;
-            border-radius: 60px;
         }
-
-        .hola-btn {
-            background: linear-gradient(135deg, #6c4bcb, #3f2a7a);
+        #entryBtn {
+            background: linear-gradient(135deg, #8b6eff, #442c9e);
             border: none;
-            padding: 0.6rem 1.8rem;
-            border-radius: 40px;
+            padding: 1rem 2.5rem;
+            font-size: 2rem;
             font-weight: bold;
-            color: #f0e9ff;
-            font-size: 1.2rem;
+            border-radius: 80px;
+            color: #ffecb3;
+            text-shadow: 0 0 8px #2a1a6e;
             cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 5px 0 #1f1742;
-            display: inline-flex;
-            gap: 8px;
-            align-items: center;
+            box-shadow: 0 12px 0 #1f1542;
+            transition: 0.07s linear;
+            letter-spacing: 2px;
+            width: 90%;
+            max-width: 500px;
+        }
+        #entryBtn:active {
+            transform: translateY(4px);
+            box-shadow: 0 6px 0 #1f1542;
         }
 
-        .hola-btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 #1f1742;
-        }
-
-        .personal-text {
-            background: rgba(25, 20, 55, 0.7);
-            padding: 0.6rem 1.2rem;
-            border-radius: 40px;
-            font-size: 1rem;
-            color: #cfc2ff;
-            border-left: 3px solid #a47eff;
-            max-width: 60%;
-        }
-
-        .personal-text span {
-            font-weight: bold;
-            color: #bbaaff;
-        }
-
-        /* zona de edición (lo que el creador escribe directamente en HTML) */
+        /* Párrafo editable (directamente desde el HTML) */
         .message-box {
             background: #0b0d26cc;
             border-radius: 2rem;
-            padding: 1rem 1.5rem;
-            margin-bottom: 2rem;
-            border: 1px solid #5f4bbe;
+            padding: 1rem 1.8rem;
+            margin: 1.5rem 0 2rem 0;
+            border-left: 6px solid #a47eff;
             backdrop-filter: blur(8px);
         }
-
         .message-box p {
-            font-size: 1.15rem;
-            line-height: 1.4;
-            color: #e9dfff;
+            font-size: 1.2rem;
+            line-height: 1.5;
+            color: #f0e6ff;
             white-space: pre-wrap;
         }
-
         .edit-note {
             font-size: 0.7rem;
             color: #7c6fbb;
-            margin-top: 8px;
             text-align: right;
+            margin-top: 8px;
         }
 
-        /* área del juego */
+        /* área del juego (oculta hasta que se presione el botón de entrada) */
+        .game-area {
+            display: none;
+            margin-top: 1rem;
+        }
         .game-wrapper {
             background: #03041ac9;
             border-radius: 2rem;
             padding: 1rem;
-            margin-top: 1rem;
             border: 1px solid #826eff;
         }
-
         .game-header {
             display: flex;
             justify-content: space-between;
@@ -124,7 +102,6 @@
             font-weight: bold;
             color: #cdbef5;
         }
-
         canvas {
             display: block;
             margin: 0 auto;
@@ -133,7 +110,6 @@
             cursor: crosshair;
             background: #13142e;
         }
-
         .info-panel {
             display: flex;
             justify-content: space-between;
@@ -141,165 +117,185 @@
             padding: 8px 16px;
             background: #00000055;
             border-radius: 60px;
+            flex-wrap: wrap;
         }
-
         .level-badge {
             background: #2f2670;
             padding: 4px 14px;
             border-radius: 40px;
         }
-
-        .phrase-area {
-            background: #211c44;
-            padding: 6px 12px;
-            border-radius: 28px;
-            font-size: 0.9rem;
-            min-height: 48px;
-            text-align: center;
-            color: #f2e9ff;
-        }
-
         .infinity-mode-tag {
             font-size: 0.9rem;
             background: #a55eff33;
             padding: 4px 12px;
             border-radius: 30px;
         }
-
-        button {
-            background: #312b66;
-            border: none;
-            color: white;
-            padding: 6px 14px;
-            border-radius: 32px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.1s linear;
-        }
-
-        button:active {
-            transform: scale(0.96);
-        }
-
         footer {
             text-align: center;
             margin-top: 20px;
             font-size: 0.7rem;
             color: #5f559b;
         }
+
+        /* Capa de fundido a negro para frases */
+        .fade-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+            color: #e6d5ff;
+            text-shadow: 0 0 12px #b77eff;
+            font-family: 'Segoe UI', cursive;
+            padding: 2rem;
+            backdrop-filter: blur(4px);
+        }
+        .fade-overlay span {
+            background: rgba(0,0,0,0.7);
+            padding: 1rem 2rem;
+            border-radius: 70px;
+            max-width: 90%;
+        }
     </style>
 </head>
 <body>
 <div class="main-container">
-    <div class="top-bar">
-        <button id="holaBtn" class="hola-btn">✨ ¡Hola de nuevo! ✨</button>
-        <div class="personal-text">
-            📜 <span>mensaje especial:</span> “cada clic guarda un recuerdo”
-        </div>
+    <div class="entry-button-container">
+        <button id="entryBtn">✨ dale a este boton para entrar, pls ✨</button>
     </div>
 
-    <!-- PÁRRAFO EDITABLE DIRECTAMENTE DESDE HTML (cambia el texto aquí) -->
+    <!-- PÁRRAFO EDITABLE DIRECTAMENTE EN EL HTML (cambia el texto aquí) -->
     <div class="message-box" id="customMessageBox">
         <p id="editableParagraph">
-            🌙 <strong>Querida persona:</strong> esto es lo que he escrito para ti.<br>
-            Puedes cambiar este párrafo entero modificando el HTML dentro de &lt;p id="editableParagraph"&gt; ... &lt;/p&gt;<br>
-            ✨ Tú decides qué mensaje dejar aquí, las palabras que quieras compartir. ✨
+            🌙 <strong>Mensaje personal:</strong><br>
+            Puedes editar este párrafo directamente en el código fuente, dentro de la etiqueta con id "editableParagraph".<br>
+            Escribe lo que quieras compartir. Cada palabra tuya vive aquí. ✨💜
         </p>
-        <div class="edit-note">✏️ (edita este texto en el código fuente, dentro de las etiquetas con id "editableParagraph")</div>
+        <div class="edit-note">✏️ (Edita este texto en el HTML, dentro de &lt;p id="editableParagraph"&gt;)</div>
     </div>
 
-    <!-- JUEGO DE OBSTÁCULOS + NIVELES -->
-    <div class="game-wrapper">
-        <div class="game-header">
-            <span>⚔️ GOLPEA ENEMIGOS (clic) ⚔️</span>
-            <span id="infinityModeLabel" class="infinity-mode-tag" style="display: none;">♾️ INFINITE MODE</span>
+    <!-- ZONA DEL JUEGO (inicialmente oculta) -->
+    <div id="gameArea" class="game-area">
+        <div class="game-wrapper">
+            <div class="game-header">
+                <span>⚔️ GOLPEA ENEMIGOS (CLICK) ⚔️</span>
+                <span id="infinityModeLabel" class="infinity-mode-tag" style="display: none;">♾️ INFINITE MODE</span>
+            </div>
+            <canvas id="gameCanvas" width="1000" height="450" style="width:100%; height:auto; max-width:1000px; aspect-ratio:1000/450"></canvas>
+            <div class="info-panel">
+                <div class="level-badge">🎯 NIVEL <span id="currentLevelNum">1</span></div>
+                <div>💀 Enemigos: <span id="enemiesRemain">0</span></div>
+                <div>🏆 <span id="gameStateMsg">Esperando...</span></div>
+            </div>
+            <div id="phraseDisplay" class="info-panel" style="justify-content:center; margin-top:8px;">🌟 Haz clic en los monstruos para eliminarlos. Salta (W/Espacio) 🌟</div>
         </div>
-        <canvas id="gameCanvas" width="1000" height="450" style="width:100%; height:auto; max-width:1000px; aspect-ratio:1000/450"></canvas>
-        <div class="info-panel">
-            <div class="level-badge">🎯 NIVEL <span id="currentLevelNum">1</span></div>
-            <div>💀 Enemigos restantes: <span id="enemiesRemain">0</span></div>
-            <div>🏆 <span id="gameStateMsg">Jugando</span></div>
-        </div>
-        <div id="phraseDisplay" class="phrase-area">🌟 Haz clic en los monstruos para eliminarlos. Completa el nivel 🌟</div>
+        <footer>🎮 Movimiento: A/D o flechas | Salto: W / ↑ / Espacio | Click sobre enemigos para matarlos</footer>
     </div>
-    <footer>💜 sonidos activados · clickea enemigos · salta entre edificios (A/D + espacio/W)</footer>
 </div>
 
+<!-- Capa de fundido a negro para frases -->
+<div id="fadeOverlay" class="fade-overlay"><span id="fadeText"></span></div>
+
 <script>
-    // --------------------- FRASES PERSONALIZABLES (cámbialas aquí) ---------------------
-    // FRASES PARA CADA NIVEL (se muestra al completar el nivel anterior y comenzar el siguiente)
-    // Nivel 1->2, 2->3 ... hasta nivel 9->10. Después usaremos las dos finales.
+    // --------------------------------------------------------------
+    // 1. FRASES PERSONALIZABLES (cambia aquí el texto de cada nivel)
+    //    Cada vez que completas un nivel (1->2, 2->3 ... 9->10) aparece una frase.
+    //    Después del nivel 10, dos frases finales.
+    // --------------------------------------------------------------
     const levelUpPhrases = {
-        1: "📖 Fase 1: los primeros ecos aparecen...",
-        2: "🌆 La noche te observa, sigue saltando.",
-        3: "⚡ Tus reflejos mejoran, elimínalos rápido.",
-        4: "🌀 Los enemigos se multiplican...",
-        5: "🌙 El cielo se tiñe de oscuridad.",
-        6: "🔥 Ya casi llegas, no pares.",
-        7: "💎 Un susurro entre los edificios.",
-        8: "🎭 La penumbra te reconoce.",
-        9: "✨ Un paso más hacia lo desconocido."
+        1: "🌒 Nivel 1: La sombra se despierta...",
+        2: "🌓 Nivel 2: Entre grietas y silencios",
+        3: "🌔 Nivel 3: La noche teje sus hilos",
+        4: "🌕 Nivel 4: El eco responde",
+        5: "🌖 Nivel 5: Caída en la penumbra",
+        6: "🌗 Nivel 6: Edificios como cuchillas",
+        7: "🌘 Nivel 7: El vacío observa",
+        8: "🌑 Nivel 8: Sólo tu espada de clics",
+        9: "💀 Nivel 9: El cielo se vuelve tinta"
     };
-    // DOS FRASES FINALES (después de nivel 10)
     const finalPhrases = [
-        "🏁 ¡Has vencido los 10 niveles! La tormenta se disipa...",
-        "🌌 'El infinito te espera, guerrero de las sombras'"
+        "🏆 ¡HAS SUPERADO LOS 10 NIVELES! 🏆",
+        "🌌 'La oscuridad te abraza, héroe de los clics' 🌌"
     ];
-    // Puedes cambiar las frases arriba ^^ respetando las comillas.
-    // -----------------------------------------------------------------------------------
+    // Puedes cambiar el texto de las frases manteniendo las comillas.
+    // -----------------------------------------------------------------
 
-    // ---------- OBTENER ELEMENTOS ----------
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    const levelSpan = document.getElementById('currentLevelNum');
-    const enemiesSpan = document.getElementById('enemiesRemain');
-    const phraseDiv = document.getElementById('phraseDisplay');
-    const gameStateMsgSpan = document.getElementById('gameStateMsg');
-    const infinityLabel = document.getElementById('infinityModeLabel');
-
-    // ---------- SONIDOS (Web Audio) ----------
+    // ---------- AUDIO (Web Audio) ----------
     let audioCtx = null;
     function initAudio() {
         if (audioCtx) return audioCtx;
         try {
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             return audioCtx;
-        } catch(e) { console.warn("audio no soportado"); return null; }
+        } catch(e) { console.warn("sin audio"); return null; }
     }
     function playSound(freq, duration, vol = 0.2, type = 'sine') {
-        const ctxAudio = initAudio();
-        if (!ctxAudio) return;
-        const resumeAndPlay = () => {
-            const now = ctxAudio.currentTime;
-            const osc = ctxAudio.createOscillator();
-            const gain = ctxAudio.createGain();
+        const ctx = initAudio();
+        if (!ctx) return;
+        const resumePlay = () => {
+            const now = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
             osc.type = type;
             osc.frequency.value = freq;
             gain.gain.value = vol;
             osc.connect(gain);
-            gain.connect(ctxAudio.destination);
+            gain.connect(ctx.destination);
             osc.start();
             gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
             osc.stop(now + duration);
         };
-        if (ctxAudio.state === 'suspended') {
-            ctxAudio.resume().then(resumeAndPlay).catch(e=>{});
-        } else { resumeAndPlay(); }
+        if (ctx.state === 'suspended') ctx.resume().then(resumePlay).catch(e=>{});
+        else resumePlay();
     }
-    function killSound() { playSound(780, 0.12, 0.25, 'triangle'); }
-    function jumpSound() { playSound(540, 0.1, 0.18, 'sine'); }
-    function levelUpSound() { playSound(880, 0.25, 0.3, 'sine'); setTimeout(()=>playSound(660,0.2,0.2), 100); }
-    function clickUISound() { playSound(680, 0.07, 0.15); }
+    function killSound() { playSound(820, 0.1, 0.28, 'triangle'); }
+    function jumpSound() { playSound(560, 0.12, 0.2, 'sine'); }
+    function levelUpSound() { playSound(880, 0.2, 0.3); setTimeout(()=>playSound(660,0.2,0.2),100); }
+    function uiClick() { playSound(700, 0.06, 0.15); }
 
-    // ---------- CONFIGURACIÓN DEL JUEGO ----------
+    // ---------- Mostrar frase con fade a negro ----------
+    const overlay = document.getElementById('fadeOverlay');
+    const fadeTextSpan = document.getElementById('fadeText');
+    function showFullscreenPhrase(text, callback) {
+        fadeTextSpan.innerText = text;
+        overlay.style.opacity = '1';
+        overlay.style.pointerEvents = 'none';
+        setTimeout(() => {
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                if (callback) callback();
+            }, 800);
+        }, 1800); // la frase se ve grande 1.8 segundos y se desvanece
+    }
+
+    // ---------- Variables del juego ----------
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const levelSpan = document.getElementById('currentLevelNum');
+    const enemiesSpan = document.getElementById('enemiesRemain');
+    const gameStateSpan = document.getElementById('gameStateMsg');
+    const infinityLabel = document.getElementById('infinityModeLabel');
+    const phraseDisplayDiv = document.getElementById('phraseDisplay');
+
     let gameRunning = true;
     let currentLevel = 1;
     let enemies = [];
-    let levelClearing = false;     // evita múltiples transiciones
     let infiniteMode = false;
-    let levelTransitionTimer = null;
-    
-    // Jugador
+    let levelTransitionLock = false;  // evita múltiples transiciones
+    let waitingForInfinityBtn = false;
+
+    // --- jugador ---
     let player = {
         x: 200, y: 0, vx: 0, vy: 0,
         width: 20, height: 24,
@@ -314,64 +310,51 @@
 
     // Plataformas (edificios)
     const platforms = [
-        { x: 80, y: 380, w: 130 },   // edificio 1
-        { x: 280, y: 360, w: 140 },  // edificio 2
-        { x: 500, y: 370, w: 140 },  // edificio 3
-        { x: 730, y: 350, w: 150 },  // edificio 4
-        { x: 920, y: 380, w: 100 }   // edificio 5 (extremo)
+        { x: 60, y: 380, w: 120 },
+        { x: 250, y: 360, w: 140 },
+        { x: 470, y: 370, w: 140 },
+        { x: 710, y: 350, w: 140 },
+        { x: 900, y: 380, w: 100 }
     ];
-    // Altura de dibujo de edificios + plataforma
-    const PLATFORM_Y_OFFSET = 8;
 
-    // Variables de control
+    // controles
     const keys = { left: false, right: false, jump: false, canJump: true };
-    let mouseX = 0, mouseY = 0;
 
-    // Niveles: cantidad y velocidad enemigos
-    const levelEnemyCount = [0,2,3,4,5,6,7,8,9,10,12]; // índice level -> enemigos
-    function getEnemySpeedForLevel(level) {
-        let base = 0.9;
-        let add = (level-1) * 0.12;
-        return Math.min(base + add, 2.6);
+    // niveles: cantidad de enemigos por nivel (del 1 al 10)
+    const enemyCountByLevel = [0,2,3,4,5,6,7,8,9,10,12];
+    function getEnemySpeed(level) {
+        return 0.9 + (level-1) * 0.12;
     }
 
-    // Ajuste de oscuridad cielo (gradiente)
-    let skyDarkness = 0; // 0->1 nivel 10 es casi negro
+    // oscuridad del cielo (a más nivel, más negro)
+    let skyDarkness = 0;
     function updateSkyDarkness() {
         let progress = (currentLevel-1)/9;
-        if (currentLevel>=10) progress = 1;
+        if (currentLevel >= 10) progress = 1;
         skyDarkness = Math.min(1, progress);
     }
 
-    // función para reiniciar nivel (enemigos)
+    // Spawn enemigos en plataformas
     function spawnEnemiesForLevel() {
-        const count = levelEnemyCount[currentLevel] || 3;
+        const count = enemyCountByLevel[currentLevel] || 3;
+        const speedVal = getEnemySpeed(currentLevel);
         const newEnemies = [];
-        const speedVal = getEnemySpeedForLevel(currentLevel);
         for (let i=0; i<count; i++) {
-            // elegir plataforma aleatoria
             const plat = platforms[Math.floor(Math.random() * platforms.length)];
             const enemyX = plat.x + 15 + Math.random() * (plat.w - 40);
             newEnemies.push({
                 x: enemyX,
-                y: plat.y - 18,   // altura enemigo
+                y: plat.y - 18,
                 radius: 14,
                 speed: speedVal,
-                platformId: plat.x, // referencia para movimiento limitado
                 platBounds: { left: plat.x, right: plat.x + plat.w }
             });
         }
         enemies = newEnemies;
-        updateEnemiesUI();
-    }
-
-    function updateEnemiesUI() {
         enemiesSpan.innerText = enemies.length;
     }
 
-    // posicionar jugador en plataforma más cercana segura
     function respawnPlayerSafe() {
-        // buscar plataforma más cercana al centro?
         let closest = platforms[0];
         let minDist = Math.abs(player.x - (closest.x+closest.w/2));
         for (let p of platforms) {
@@ -385,84 +368,97 @@
         player.grounded = true;
     }
 
-    // avanzar de nivel
-    function nextLevel() {
-        if (levelClearing) return;
-        levelClearing = true;
+    // lógica para pasar de nivel (con frase y fade)
+    function advanceToNextLevel() {
+        if (levelTransitionLock) return;
+        levelTransitionLock = true;
+
         if (!infiniteMode && currentLevel === 10) {
-            // FINAL JUEGO: mostrar dos frases seguidas y luego botón infinito
-            gameStateMsgSpan.innerText = "¡VICTORIA!";
-            phraseDiv.innerHTML = `✨ ${finalPhrases[0]} ✨<br>✨ ${finalPhrases[1]} ✨`;
+            // FINAL DEL JUEGO: mostrar dos frases seguidas con fade
+            gameStateSpan.innerText = "VICTORIA";
+            phraseDisplayDiv.innerHTML = "✨ ¡CAMPEÓN! ✨";
             levelUpSound();
-            // crear botón modo infinito si no existe
-            if (!document.getElementById('infiniteModeBtn')) {
-                const btnInf = document.createElement('button');
-                btnInf.id = 'infiniteModeBtn';
-                btnInf.innerText = '🌌 MODO INFINITO (sin frases) 🌌';
-                btnInf.style.margin = '10px auto';
-                btnInf.style.display = 'block';
-                btnInf.style.background = '#9f7eff';
-                document.querySelector('.info-panel').after(btnInf);
-                btnInf.addEventListener('click', () => {
-                    clickUISound();
-                    startInfiniteMode();
-                    btnInf.remove();
+            showFullscreenPhrase(finalPhrases[0], () => {
+                showFullscreenPhrase(finalPhrases[1], () => {
+                    // Mostrar botón de modo infinito si no existe
+                    if (!document.getElementById('infinityModeBtn')) {
+                        const btnInf = document.createElement('button');
+                        btnInf.id = 'infinityModeBtn';
+                        btnInf.innerText = '🌌 MODO INFINITO (sin frases) 🌌';
+                        btnInf.style.margin = '15px auto';
+                        btnInf.style.display = 'block';
+                        btnInf.style.background = '#9f7eff';
+                        btnInf.style.padding = '10px 20px';
+                        btnInf.style.borderRadius = '60px';
+                        btnInf.style.fontWeight = 'bold';
+                        btnInf.style.cursor = 'pointer';
+                        document.querySelector('.info-panel').after(btnInf);
+                        btnInf.addEventListener('click', () => {
+                            uiClick();
+                            startInfiniteMode();
+                            btnInf.remove();
+                        });
+                    }
+                    levelTransitionLock = false;
                 });
-            }
-            levelClearing = false;
+            });
             return;
         }
-        // normal o modo infinito
+
+        // Modo normal o infinito
         if (infiniteMode) {
+            // infinito: sube nivel cíclico sin frases, solo actualizar
             let next = currentLevel + 1;
             if (next > 10) next = 1;
             currentLevel = next;
             levelSpan.innerText = currentLevel;
             updateSkyDarkness();
             spawnEnemiesForLevel();
-            updateEnemiesUI();
-            phraseDiv.innerHTML = `♾️ INFINITE · nivel ${currentLevel} · sin frases ♾️`;
-            gameStateMsgSpan.innerText = "Modo infinito";
-            levelClearing = false;
+            enemiesSpan.innerText = enemies.length;
+            phraseDisplayDiv.innerHTML = `♾️ INFINITE · nivel ${currentLevel} · sin frases ♾️`;
+            gameStateSpan.innerText = "Infinito";
+            levelTransitionLock = false;
             return;
         }
-        // modo normal (1-10)
+
+        // MODO NORMAL: sube nivel y muestra frase
+        const oldLevel = currentLevel;
         currentLevel++;
-        if (currentLevel > 10) currentLevel = 10; // por seguridad
+        if (currentLevel > 10) currentLevel = 10;
         levelSpan.innerText = currentLevel;
         updateSkyDarkness();
         spawnEnemiesForLevel();
-        updateEnemiesUI();
-        // mostrar frase de transición (si existe)
-        let fraseMostrar = levelUpPhrases[currentLevel-1] || `🌟 Nivel ${currentLevel} · más oscuridad 🌟`;
-        phraseDiv.innerHTML = `✨ ${fraseMostrar} ✨`;
-        gameStateMsgSpan.innerText = "Nuevo nivel";
+        enemiesSpan.innerText = enemies.length;
+
+        const phraseKey = currentLevel-1; // porque frase se muestra al pasar del 1 al 2, etc.
+        let phraseToShow = levelUpPhrases[phraseKey] || `✨ Nivel ${currentLevel} · avanza ✨`;
+        gameStateSpan.innerText = "Nuevo nivel";
         levelUpSound();
-        setTimeout(() => {
-            if (!infiniteMode) phraseDiv.innerHTML = "⚔️ Click en enemigos para eliminarlos. Salta entre edificios ⚔️";
-            gameStateMsgSpan.innerText = "Jugando";
-        }, 2000);
-        levelClearing = false;
+        showFullscreenPhrase(phraseToShow, () => {
+            phraseDisplayDiv.innerHTML = "⚔️ Click en enemigos. Salta entre edificios ⚔️";
+            gameStateSpan.innerText = "Jugando";
+            levelTransitionLock = false;
+        });
     }
 
-    // modo infinito
+    // Iniciar modo infinito
     function startInfiniteMode() {
         infiniteMode = true;
         currentLevel = 1;
-        levelSpan.innerText = currentLevel;
+        levelSpan.innerText = 1;
         updateSkyDarkness();
         spawnEnemiesForLevel();
-        updateEnemiesUI();
+        enemiesSpan.innerText = enemies.length;
         infinityLabel.style.display = 'inline-block';
-        phraseDiv.innerHTML = "♾️ INFINITE LEVELS, LIKE MY INFINITE SORRY ♾️";
-        gameStateMsgSpan.innerText = "∞ INFINITO ∞";
-        levelClearing = false;
-        // eliminar cualquier botón existente
-        const oldBtn = document.getElementById('infiniteModeBtn');
+        phraseDisplayDiv.innerHTML = "♾️ INFINITE LEVELS, LIKE MY INFINITE SORRY ♾️";
+        gameStateSpan.innerText = "∞ INFINITO ∞";
+        levelTransitionLock = false;
+        waitingForInfinityBtn = false;
+        const oldBtn = document.getElementById('infinityModeBtn');
         if(oldBtn) oldBtn.remove();
     }
 
-    // lógica para matar enemigos con click
+    // Matar enemigos con click
     function handleCanvasClick(e) {
         if (!gameRunning) return;
         const rect = canvas.getBoundingClientRect();
@@ -470,124 +466,102 @@
         const scaleY = canvas.height / rect.height;
         let clickX = (e.clientX - rect.left) * scaleX;
         let clickY = (e.clientY - rect.top) * scaleY;
-        let hitIndex = -1;
+        let hit = -1;
         for (let i=0; i<enemies.length; i++) {
             const en = enemies[i];
             const dx = clickX - en.x;
-            const dy = clickY - en.y;
-            const dist = Math.sqrt(dx*dx+dy*dy);
-            if (dist < en.radius+5) {
-                hitIndex = i;
-                break;
-            }
+            const dy = clickY - (en.y-3);
+            if (Math.hypot(dx, dy) < en.radius+5) { hit = i; break; }
         }
-        if (hitIndex !== -1) {
+        if (hit !== -1) {
             killSound();
-            enemies.splice(hitIndex,1);
-            updateEnemiesUI();
-            if (enemies.length === 0 && !levelClearing) {
-                // completar nivel
-                nextLevel();
+            enemies.splice(hit,1);
+            enemiesSpan.innerText = enemies.length;
+            if (enemies.length === 0 && !levelTransitionLock) {
+                advanceToNextLevel();
             }
         } else {
-            // clic en vacío: pequeño sonido neutro
-            playSound(420,0.05,0.1);
+            playSound(430,0.05,0.1);
         }
     }
 
-    // actualizar movimiento enemigos (se mueven hacia el jugador pero dentro de su plataforma)
-    function updateEnemiesMovement() {
+    // movimiento enemigos
+    function updateEnemies() {
         for (let en of enemies) {
-            // dirección hacia jugador
             let dir = 0;
             if (player.x + player.width/2 > en.x) dir = 1;
             else if (player.x + player.width/2 < en.x) dir = -1;
             let newX = en.x + dir * en.speed;
-            // limitar dentro de los bounds de la plataforma (guardamos referencia)
-            if (newX > en.platBounds.left+5 && newX < en.platBounds.right - en.radius) {
+            if (newX > en.platBounds.left+8 && newX < en.platBounds.right - en.radius) {
                 en.x = newX;
             } else {
-                // si topa borde, simplemente no se mueve más allá
-                if (newX <= en.platBounds.left+5) en.x = en.platBounds.left+6;
+                if (newX <= en.platBounds.left+8) en.x = en.platBounds.left+9;
                 if (newX >= en.platBounds.right - en.radius) en.x = en.platBounds.right - en.radius -1;
             }
         }
     }
 
-    // lógica jugador
-    function handlePlayerMovement() {
+    // movimiento jugador
+    function handlePlayer() {
         if (keys.left) { player.vx -= WALK_ACC; player.facingRight = false; }
         if (keys.right) { player.vx += WALK_ACC; player.facingRight = true; }
         player.vx *= FRICTION;
-        if (Math.abs(player.vx) < 0.2) player.vx = 0;
-        if (player.vx > MAX_SPEED) player.vx = MAX_SPEED;
-        if (player.vx < -MAX_SPEED) player.vx = -MAX_SPEED;
+        player.vx = Math.min(MAX_SPEED, Math.max(-MAX_SPEED, player.vx));
         player.x += player.vx;
-        // aplicar gravedad
+
         player.vy += GRAVITY;
         player.y += player.vy;
-        // colisión con plataformas
         player.grounded = false;
         for (let plat of platforms) {
-            if (player.y + player.height > plat.y && player.y + player.height < plat.y + 18 &&
+            if (player.y + player.height > plat.y && player.y + player.height < plat.y + 20 &&
                 player.x + player.width > plat.x && player.x < plat.x + plat.w) {
                 player.y = plat.y - player.height;
                 player.vy = 0;
                 player.grounded = true;
             }
         }
-        // límites laterales
         if (player.x < 20) player.x = 20;
         if (player.x + player.width > canvas.width-20) player.x = canvas.width - player.width -20;
-        // si se cae al vacío (respawn)
-        if (player.y + player.height > canvas.height+50) {
-            respawnPlayerSafe();
-            player.vy = 0;
-        }
+        if (player.y + player.height > canvas.height+80) respawnPlayerSafe();
         if (player.y < 0) player.y = 0;
-        // salto
+
         if (keys.jump && player.grounded && keys.canJump) {
             player.vy = JUMP_POWER;
             player.grounded = false;
             jumpSound();
             keys.canJump = false;
-            setTimeout(() => { keys.canJump = true; }, 250);
+            setTimeout(() => { keys.canJump = true; }, 280);
         }
         if (!keys.jump) keys.canJump = true;
     }
 
-    // DIBUJAR TODO
+    // ------- DIBUJADO -------
     function drawBackground() {
         const grad = ctx.createLinearGradient(0,0,0,canvas.height);
         let r = 20 + (1-skyDarkness)*35;
         let g = 15 + (1-skyDarkness)*25;
-        let b = 50 + (1-skyDarkness)*40;
-        let darkR = 8, darkG = 2, darkB = 20;
+        let b = 50 + (1-skyDarkness)*45;
+        let darkR = 5, darkG = 0, darkB = 18;
         grad.addColorStop(0, `rgb(${r*(1-skyDarkness)+darkR*skyDarkness}, ${g*(1-skyDarkness)+darkG*skyDarkness}, ${b*(1-skyDarkness)+darkB*skyDarkness})`);
-        grad.addColorStop(1, `rgb(3, 2, 20)`);
+        grad.addColorStop(1, `rgb(3, 2, 18)`);
         ctx.fillStyle = grad;
         ctx.fillRect(0,0,canvas.width,canvas.height);
-        // estrellas
-        for(let i=0;i<100;i++) {
-            if (Math.random()<0.03) {
-                ctx.fillStyle = `rgba(255,240,200,${0.3+skyDarkness*0.5})`;
-                ctx.fillRect( (i*131)%canvas.width, (i*57)%canvas.height, 2,2);
+        for(let i=0;i<120;i++) {
+            if (Math.random()<0.04) {
+                ctx.fillStyle = `rgba(255,230,200,${0.2+skyDarkness*0.4})`;
+                ctx.fillRect( (i*181)%canvas.width, (i*73)%canvas.height, 2,2);
             }
         }
     }
 
     function drawPlatforms() {
         for (let plat of platforms) {
-            ctx.fillStyle = "#2c244f";
-            ctx.shadowBlur = 6;
+            ctx.fillStyle = "#352d66";
             ctx.fillRect(plat.x, plat.y-8, plat.w, 12);
-            ctx.fillStyle = "#5a46a5";
+            ctx.fillStyle = "#6c56b0";
             ctx.fillRect(plat.x, plat.y-5, plat.w, 8);
-            ctx.fillStyle = "#8f7ad0";
+            ctx.fillStyle = "#a085ff";
             ctx.fillRect(plat.x+5, plat.y-12, plat.w-10, 6);
-            ctx.fillStyle = "#b59eff";
-            ctx.fillRect(plat.x+10, plat.y-15, plat.w-20, 4);
-            ctx.shadowBlur = 0;
         }
     }
 
@@ -598,122 +572,111 @@
             ctx.scale(-1,1);
             ctx.translate(-(player.x+player.width/2), -(player.y+player.height/2));
         }
-        ctx.fillStyle = "#ffdd99";
-        ctx.shadowBlur = 8;
+        ctx.fillStyle = "#ffdb8e";
         ctx.fillRect(player.x, player.y, player.width, player.height);
-        ctx.fillStyle = "#fdba3a";
-        ctx.fillRect(player.x+4, player.y-5, 5, 8);
-        ctx.fillRect(player.x+player.width-9, player.y-5, 5, 8);
-        ctx.fillStyle = "#000";
-        ctx.fillRect(player.x+4, player.y+6, 4, 5);
-        ctx.fillRect(player.x+player.width-8, player.y+6, 4, 5);
+        ctx.fillStyle = "#f5b042";
+        ctx.fillRect(player.x+4, player.y-6, 5, 9);
+        ctx.fillRect(player.x+player.width-9, player.y-6, 5, 9);
+        ctx.fillStyle = "#221c00";
+        ctx.fillRect(player.x+4, player.y+6, 4, 6);
+        ctx.fillRect(player.x+player.width-8, player.y+6, 4, 6);
         ctx.restore();
-        ctx.shadowBlur = 0;
     }
 
     function drawEnemies() {
         for (let en of enemies) {
             ctx.fillStyle = "#d64545";
-            ctx.shadowBlur = 4;
             ctx.beginPath();
-            ctx.arc(en.x, en.y-3, en.radius-2, 0, Math.PI*2);
+            ctx.arc(en.x, en.y-4, en.radius-2, 0, Math.PI*2);
             ctx.fill();
-            ctx.fillStyle = "#8b0000";
+            ctx.fillStyle = "#610000";
             ctx.beginPath();
-            ctx.arc(en.x-5, en.y-8, 3, 0, Math.PI*2);
-            ctx.arc(en.x+5, en.y-8, 3, 0, Math.PI*2);
+            ctx.arc(en.x-5, en.y-9, 3, 0, Math.PI*2);
+            ctx.arc(en.x+5, en.y-9, 3, 0, Math.PI*2);
             ctx.fill();
             ctx.fillStyle = "white";
             ctx.beginPath();
-            ctx.arc(en.x-6, en.y-9, 1, 0, Math.PI*2);
-            ctx.arc(en.x+4, en.y-9, 1, 0, Math.PI*2);
+            ctx.arc(en.x-6, en.y-10, 1.2, 0, Math.PI*2);
+            ctx.arc(en.x+4, en.y-10, 1.2, 0, Math.PI*2);
             ctx.fill();
-            ctx.fillStyle = "#200000";
-            ctx.fillRect(en.x-8, en.y-2, 16, 4);
+            ctx.fillStyle = "#3a0000";
+            ctx.fillRect(en.x-8, en.y-3, 16, 4);
         }
-        ctx.shadowBlur=0;
     }
 
-    // ciclo de animación
+    function drawUItext() {
+        if (infiniteMode) {
+            ctx.font = "bold 20px 'Segoe UI'";
+            ctx.fillStyle = "#ffbbff";
+            ctx.shadowBlur = 0;
+            ctx.fillText("♾️ infinite levels, like my infinite sorry ♾️", canvas.width/2-280, 40);
+        }
+    }
+
+    // ciclo principal
     function updateGame() {
         if (!gameRunning) return;
-        handlePlayerMovement();
-        updateEnemiesMovement();
-        // evitar bugs cuando no hay enemigos pero se llama nextLevel desde fuera
-        if (enemies.length === 0 && !levelClearing && !infiniteMode && currentLevel<10) {
-            // ya se llama en el click pero por si acaso
-        }
+        handlePlayer();
+        updateEnemies();
     }
-
     function render() {
         drawBackground();
         drawPlatforms();
         drawEnemies();
         drawPlayer();
-        // texto adicional
-        ctx.font = "bold 16monospace";
-        ctx.fillStyle = "#f1e3ff";
-        ctx.shadowBlur = 0;
-        if (infiniteMode) {
-            ctx.font = "bold 18px 'Segoe UI'";
-            ctx.fillStyle = "#ffb2ff";
-            ctx.fillText("♾️ infinite levels, like my infinite sorry ♾️", canvas.width/2-210, 35);
-        }
+        drawUItext();
     }
-
     function gameLoop() {
         updateGame();
         render();
         requestAnimationFrame(gameLoop);
     }
 
-    // eventos teclado
-    function handleKeyDown(e) {
-        if (e.key === 'ArrowLeft' || e.key === 'a') keys.left = true;
-        if (e.key === 'ArrowRight' || e.key === 'd') keys.right = true;
-        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ') {
-            e.preventDefault();
-            keys.jump = true;
-        }
-    }
-    function handleKeyUp(e) {
-        if (e.key === 'ArrowLeft' || e.key === 'a') keys.left = false;
-        if (e.key === 'ArrowRight' || e.key === 'd') keys.right = false;
-        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ') {
-            keys.jump = false;
-        }
-    }
-
-    // inicializar juego
-    function initGame() {
+    // ----- Inicialización cuando se hace clic en el botón de entrada -----
+    function startGameAfterEntry() {
+        // mostrar área de juego
+        document.getElementById('gameArea').style.display = 'block';
+        // ocultar el contenedor del botón (opcional)
+        document.querySelector('.entry-button-container').style.display = 'none';
+        // inicializar juego
         currentLevel = 1;
         infiniteMode = false;
-        levelSpan.innerText = 1;
+        levelTransitionLock = false;
+        waitingForInfinityBtn = false;
         skyDarkness = 0;
         updateSkyDarkness();
+        levelSpan.innerText = 1;
         spawnEnemiesForLevel();
-        updateEnemiesUI();
+        enemiesSpan.innerText = enemies.length;
         respawnPlayerSafe();
-        gameRunning = true;
-        levelClearing = false;
-        phraseDiv.innerHTML = "⚔️ Click en enemigos para eliminarlos. Salta entre edificios ⚔️";
+        gameStateSpan.innerText = "Jugando";
+        phraseDisplayDiv.innerHTML = "⚔️ Click en enemigos. Salta (W/Espacio) ⚔️";
         infinityLabel.style.display = 'none';
-        const oldBtn = document.getElementById('infiniteModeBtn');
+        const oldBtn = document.getElementById('infinityModeBtn');
         if(oldBtn) oldBtn.remove();
-        window.addEventListener('keydown', handleKeyDown);
-        window.addEventListener('keyup', handleKeyUp);
+        // eventos
         canvas.addEventListener('click', handleCanvasClick);
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' || e.key === 'a') keys.left = true;
+            if (e.key === 'ArrowRight' || e.key === 'd') keys.right = true;
+            if (e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ') {
+                e.preventDefault();
+                keys.jump = true;
+            }
+        });
+        window.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowLeft' || e.key === 'a') keys.left = false;
+            if (e.key === 'ArrowRight' || e.key === 'd') keys.right = false;
+            if (e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ') keys.jump = false;
+        });
         gameLoop();
     }
 
-    // botón hola de nuevo
-    document.getElementById('holaBtn').addEventListener('click', () => {
-        clickUISound();
-        alert("✨ ¡Hola de nuevo! Espero que disfrutes esta sorpresa interactiva ✨");
+    // botón de entrada
+    document.getElementById('entryBtn').addEventListener('click', () => {
+        uiClick();
+        startGameAfterEntry();
     });
-
-    // iniciamos
-    initGame();
 </script>
 </body>
 </html>
