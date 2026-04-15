@@ -1,107 +1,537 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>YouTube Fullscreen Player</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Nebulosa Creativa | Tu espacio personal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* Evita selección molesta, pero el texto editable sí se puede seleccionar */
+        }
 
-  <style>
-    body {
-      margin: 0;
-      background: black;
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at 20% 30%, #0a0f2a, #03050b);
+            font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
 
-    .controls {
-      background: #111;
-      padding: 15px;
-      display: flex;
-      gap: 10px;
-    }
+        /* Partículas de fondo animadas (estrellas brillantes) */
+        .star {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: twinkle 3s infinite alternate;
+            box-shadow: 0 0 6px rgba(180, 130, 255, 0.8);
+        }
 
-    input {
-      flex: 1;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
-    }
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(1);}
+            100% { opacity: 1; transform: scale(1.2);}
+        }
 
-    button {
-      padding: 10px 15px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      background: red;
-      color: white;
-      font-weight: bold;
-    }
+        /* contenedor principal */
+        .glass-card {
+            background: rgba(12, 15, 40, 0.55);
+            backdrop-filter: blur(12px);
+            border-radius: 3rem;
+            border: 1px solid rgba(110, 80, 200, 0.5);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), 0 0 20px rgba(100, 70, 200, 0.3);
+            width: 100%;
+            max-width: 850px;
+            padding: 2rem 2rem 2.2rem;
+            transition: transform 0.25s ease, box-shadow 0.3s ease;
+            animation: floatIn 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
 
-    .video-container {
-      flex: 1;
-    }
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 55px rgba(0, 0, 0, 0.6), 0 0 25px rgba(130, 90, 230, 0.5);
+        }
 
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-  </style>
+        @keyframes floatIn {
+            0% { opacity: 0; transform: scale(0.96) translateY(30px);}
+            100% { opacity: 1; transform: scale(1) translateY(0);}
+        }
+
+        /* encabezado con animación de gradiente */
+        .title-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .title-section h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #b2a4ff, #6c4fcb, #3c2a7a);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shine 5s linear infinite;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        @keyframes shine {
+            0% { background-position: 0% 50%;}
+            50% { background-position: 100% 50%;}
+            100% { background-position: 0% 50%;}
+        }
+
+        .sub {
+            color: #b1a5e6;
+            font-weight: 400;
+            border-bottom: 1px dashed #5f48b3;
+            display: inline-block;
+            padding-bottom: 6px;
+            font-size: 1rem;
+        }
+
+        /* zona de escritura mágica */
+        .editor-area {
+            margin: 1.8rem 0;
+        }
+
+        .writing-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ccc2ff;
+            font-weight: 500;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+
+        .writing-label i {
+            font-style: normal;
+            font-size: 1.3rem;
+        }
+
+        .magic-input {
+            width: 100%;
+            min-height: 220px;
+            background: rgba(8, 10, 28, 0.75);
+            border: 1.5px solid #4a3790;
+            border-radius: 28px;
+            padding: 1.4rem 1.5rem;
+            color: #f0eaff;
+            font-size: 1.05rem;
+            line-height: 1.55;
+            font-family: 'Segoe UI', 'Fira Code', monospace;
+            resize: vertical;
+            outline: none;
+            transition: all 0.2s;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.3), 0 0 5px rgba(110, 70, 210, 0.3);
+        }
+
+        .magic-input:focus {
+            border-color: #9a7dff;
+            box-shadow: 0 0 15px rgba(130, 100, 240, 0.6), inset 0 1px 4px #00000055;
+            background: rgba(5, 7, 22, 0.85);
+        }
+
+        /* botones con sonido y animaciones */
+        .button-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0 1rem;
+        }
+
+        .cute-btn {
+            background: linear-gradient(135deg, #1e1a45, #110c2c);
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #e2d6ff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 6px 0 #0b0820;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(4px);
+            letter-spacing: 0.5px;
+        }
+
+        .cute-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #0b0820;
+        }
+
+        .cute-btn:hover {
+            background: linear-gradient(135deg, #322b6e, #1f1952);
+            color: white;
+            text-shadow: 0 0 3px #bbaaff;
+            box-shadow: 0 6px 0 #0b0820, 0 0 12px #7b5eff;
+        }
+
+        /* botón especial brillo */
+        .glow-btn {
+            background: linear-gradient(135deg, #5e43c7, #341f84);
+            box-shadow: 0 6px 0 #1b123f, 0 0 8px #a07eff;
+        }
+
+        /* contador de palabras / caracteres */
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 40px;
+            font-size: 0.85rem;
+            color: #b9abf0;
+        }
+
+        .badge {
+            background: #2b235a;
+            padding: 0.2rem 0.8rem;
+            border-radius: 50px;
+            font-family: monospace;
+        }
+
+        /* animación sutil para el texto cuando se limpia */
+        @keyframes gentlePop {
+            0% { transform: scale(1); opacity: 0.9;}
+            100% { transform: scale(1);}
+        }
+
+        .pop-effect {
+            animation: gentlePop 0.2s ease;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 1.6rem;
+            font-size: 0.7rem;
+            color: #5d539b;
+        }
+
+        /* scroll bonito */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f0c2a;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #6c4bcb;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body>
+    <!-- Estrellas dinámicas generadas por JS -->
+    <div id="stars-container"></div>
 
-  <div class="controls">
-    <input type="text" id="urlInput" placeholder="Pega URL de YouTube aquí">
-    <button onclick="loadVideo()">Reproducir</button>
-  </div>
+    <div class="glass-card">
+        <div class="title-section">
+            <h1>✨ lienzo etéreo ✨</h1>
+            <div class="sub">escribe lo que quieras · vibra morada</div>
+        </div>
 
-  <div class="video-container" id="videoContainer"></div>
+        <div class="editor-area">
+            <div class="writing-label">
+                <i>✍️</i> <span>tu espacio personal</span>
+            </div>
+            <textarea id="magicTextarea" class="magic-input" placeholder="📝 Escribe aquí tus pensamientos, frases, poesía, ideas... todo lo que nazca..."></textarea>
+            
+            <div class="stats">
+                <span>🔮 caracteres: <span id="charCount">0</span></span>
+                <span>📖 palabras: <span id="wordCount">0</span></span>
+                <div class="badge">✨ sonidos activados</div>
+            </div>
+        </div>
 
-  <script>
-    function extractVideoID(url) {
-      try {
-        const urlObj = new URL(url);
+        <div class="button-panel">
+            <button id="clearBtn" class="cute-btn">🧹 Limpiar todo</button>
+            <button id="copyBtn" class="cute-btn">📋 Copiar texto</button>
+            <button id="magicBtn" class="cute-btn glow-btn">✨ Palabra mágica ✨</button>
+        </div>
+        <footer>
+            💜 clic en cualquier botón → sonido especial | tonos azul profundo & morado
+        </footer>
+    </div>
 
-        if (urlObj.hostname.includes("youtube.com")) {
-          return urlObj.searchParams.get("v");
-        }
+    <script>
+        (function(){
+            // ---------- SONIDOS CON WEB AUDIO API (sintetizador de clicks y efectos) ----------
+            // No necesita archivos externos, funciona al instante y es ligero.
+            let audioCtx = null;
+            
+            function initAudio() {
+                if (audioCtx) return audioCtx;
+                try {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    return audioCtx;
+                } catch(e) {
+                    console.warn("Web Audio API no soportada, sonido desactivado");
+                    return null;
+                }
+            }
 
-        if (urlObj.hostname.includes("youtu.be")) {
-          return urlObj.pathname.slice(1);
-        }
+            // reproducir un "click" suave pero agradable
+            function playClickSound(pitch = 780, duration = 0.12, volume = 0.25) {
+                let context = initAudio();
+                if (!context) return;
+                // reanudar si está suspendido (por políticas del navegador)
+                if (context.state === 'suspended') {
+                    context.resume().then(() => {
+                        actuallyPlay(context, pitch, duration, volume);
+                    }).catch(e=>console.log);
+                } else {
+                    actuallyPlay(context, pitch, duration, volume);
+                }
+            }
 
-      } catch (e) {
-        return null;
-      }
+            function actuallyPlay(context, pitch, duration, volume) {
+                const now = context.currentTime;
+                const osc = context.createOscillator();
+                const gain = context.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = pitch;
+                gain.gain.value = volume;
+                osc.connect(gain);
+                gain.connect(context.destination);
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.00001, now + duration);
+                osc.stop(now + duration);
+            }
 
-      return null;
-    }
+            // sonido mágico un poco más brillante (para botón mágico)
+            function playMagicSound() {
+                let context = initAudio();
+                if (!context) return;
+                if (context.state === 'suspended') {
+                    context.resume().then(() => magicSoundInternal(context)).catch(e=>console.log);
+                } else {
+                    magicSoundInternal(context);
+                }
+            }
+            function magicSoundInternal(context) {
+                const now = context.currentTime;
+                const osc1 = context.createOscillator();
+                const osc2 = context.createOscillator();
+                const gain = context.createGain();
+                osc1.type = 'sine';
+                osc2.type = 'triangle';
+                osc1.frequency.value = 523.25;  // Do5
+                osc2.frequency.value = 659.25;  // Mi5
+                gain.gain.value = 0.2;
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(context.destination);
+                osc1.start();
+                osc2.start();
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+                osc1.stop(now + 0.35);
+                osc2.stop(now + 0.35);
+            }
 
-    function loadVideo() {
-      const url = document.getElementById("urlInput").value.trim();
-      const videoID = extractVideoID(url);
+            // sonido de copiar (click corto)
+            function playCopySound() {
+                playClickSound(980, 0.09, 0.2);
+            }
+            // sonido limpiar (descendente)
+            function playClearSound() {
+                let context = initAudio();
+                if (!context) return;
+                const resumePlay = () => {
+                    const now = context.currentTime;
+                    const osc = context.createOscillator();
+                    const gain = context.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = 500;
+                    gain.gain.value = 0.2;
+                    osc.connect(gain);
+                    gain.connect(context.destination);
+                    osc.start();
+                    osc.frequency.exponentialRampToValueAtTime(220, now + 0.2);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+                    osc.stop(now + 0.25);
+                };
+                if (context.state === 'suspended') {
+                    context.resume().then(() => resumePlay()).catch(e=>console.log);
+                } else { resumePlay(); }
+            }
 
-      if (!videoID) {
-        alert("URL no válida");
-        return;
-      }
+            // función para "click" en cualquier botón (efecto general)
+            function attachSoundToButtons() {
+                const btns = document.querySelectorAll('.cute-btn');
+                btns.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        // pequeño sonido de clic base, pero evitamos duplicar para botones que ya tienen sonido propio
+                        // No vamos a sobrecargar: para botón limpiar, copiar y mágico llamaremos funciones específicas después.
+                        // Pero añadimos un micro beep muy sutil solo para el evento de clic general (podría solaparse)
+                        // Para evitar ruido excesivo: no agregamos aquí, los botones tienen su propio sonido personalizado.
+                    });
+                });
+            }
 
-      const embedUrl = `https://www.youtube.com/embed/${videoID}?autoplay=1&rel=0`;
+            // Elementos DOM
+            const textarea = document.getElementById('magicTextarea');
+            const clearBtn = document.getElementById('clearBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const magicBtn = document.getElementById('magicBtn');
+            const charSpan = document.getElementById('charCount');
+            const wordSpan = document.getElementById('wordCount');
 
-      const container = document.getElementById("videoContainer");
-      container.innerHTML = `
-        <iframe 
-          src="${embedUrl}"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-          allowfullscreen>
-        </iframe>
-      `;
-    }
-  </script>
+            // Actualizar contador de caracteres y palabras
+            function updateStats() {
+                const text = textarea.value;
+                const chars = text.length;
+                const words = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+                charSpan.innerText = chars;
+                wordSpan.innerText = words;
+            }
 
+            // Añadir animación pop al textarea
+            function animateTextarea() {
+                textarea.classList.add('pop-effect');
+                setTimeout(() => {
+                    textarea.classList.remove('pop-effect');
+                }, 200);
+            }
+
+            // Evento de escritura (actualizar estadísticas)
+            textarea.addEventListener('input', () => {
+                updateStats();
+                // opcional: sonido muy sutil al escribir? No se pidió pero es "sonidos de click y demás", 
+                // mejor un micro sonido al teclear? quizá demasiado. Pero podemos añadir un "tick" muy ligero cada 5 caracteres?
+                // Para no saturar, lo dejamos opcional: no incluyo sonido al escribir porque podría ser molesto.
+            });
+
+            // BOTÓN LIMPIAR con sonido
+            clearBtn.addEventListener('click', () => {
+                playClearSound();
+                textarea.value = '';
+                updateStats();
+                animateTextarea();
+                // feedback extra: un pequeño efecto de brillo en el contenedor
+                const glass = document.querySelector('.glass-card');
+                glass.style.transform = 'scale(0.99)';
+                setTimeout(() => { glass.style.transform = ''; }, 120);
+            });
+
+            // BOTÓN COPIAR
+            copyBtn.addEventListener('click', async () => {
+                playCopySound();
+                const textToCopy = textarea.value;
+                if (!textToCopy) {
+                    // si está vacío, sonido de error sutil
+                    playClickSound(440, 0.1, 0.15);
+                    alert("✨ No hay nada escrito para copiar... ¡escribe algo mágico!");
+                    return;
+                }
+                try {
+                    await navigator.clipboard.writeText(textToCopy);
+                    // éxito: sonido agradable
+                    playMagicSound(); // un pequeño éxito
+                    // mostramos notificación rápida
+                    const originalText = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '✅ ¡Copiado!';
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalText;
+                    }, 1200);
+                    animateTextarea();
+                } catch (err) {
+                    console.error(err);
+                    playClickSound(300, 0.15, 0.2);
+                    alert("No se pudo copiar :(");
+                }
+            });
+
+            // BOTÓN MÁGICO: inserta una palabra sorpresa o frase inspiradora
+            magicBtn.addEventListener('click', () => {
+                playMagicSound();
+                const frases = [
+                    "🌙 Y bajo la luna morada, todo es posible.",
+                    "💜 Tus pensamientos son constelaciones únicas.",
+                    "✨ El universo te escucha, escribe con el corazón.",
+                    "🎇 Lo que sueñas hoy, florece mañana.",
+                    "🌀 La magia empieza cuando escribes sin miedo.",
+                    "⭐️ Sigue creando, nadie más tiene tu voz.",
+                    "🔮 Este momento es solo tuyo.",
+                    "🎨 Las palabras tienen poder oculto.",
+                    "🌌 La nebulosa de tu mente brilla más que el sol."
+                ];
+                const randomFrase = frases[Math.floor(Math.random() * frases.length)];
+                const currentText = textarea.value;
+                if (currentText.length > 0 && !currentText.endsWith('\n') && !currentText.endsWith(' ')) {
+                    textarea.value = currentText + '\n\n' + randomFrase;
+                } else {
+                    textarea.value = currentText + randomFrase;
+                }
+                updateStats();
+                animateTextarea();
+                // destello en el botón
+                magicBtn.style.transform = 'scale(0.96)';
+                setTimeout(() => { magicBtn.style.transform = ''; }, 100);
+                // enfocar textarea
+                textarea.focus();
+            });
+
+            // Inicializar estadísticas
+            updateStats();
+
+            // Generar estrellas de fondo animadas
+            function generateStars() {
+                const container = document.getElementById('stars-container');
+                const starCount = 130;
+                for (let i = 0; i < starCount; i++) {
+                    const star = document.createElement('div');
+                    star.classList.add('star');
+                    const size = Math.random() * 4 + 1;
+                    star.style.width = size + 'px';
+                    star.style.height = size + 'px';
+                    star.style.left = Math.random() * 100 + '%';
+                    star.style.top = Math.random() * 100 + '%';
+                    star.style.animationDuration = Math.random() * 2 + 1.5 + 's';
+                    star.style.animationDelay = Math.random() * 5 + 's';
+                    star.style.opacity = Math.random() * 0.7 + 0.2;
+                    container.appendChild(star);
+                }
+            }
+            generateStars();
+
+            // Al hacer clic en cualquier lugar de la página también se puede reanudar el audio si está suspendido
+            document.body.addEventListener('click', () => {
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume().then(() => {
+                        console.log('audio reanudado');
+                        // opcional: pequeño pitido de bienvenida
+                        playClickSound(660, 0.08, 0.1);
+                    }).catch(e=>{});
+                }
+            }, { once: true }); // lo intentamos una vez al primer clic global
+
+            // Si el usuario interactúa con cualquier botón ya se reanuda automáticamente gracias a las funciones.
+            // Para asegurar que los sonidos funcionen, precargamos el contexto silenciosamente sin molestar
+            // Pero es mejor que el primer clic del usuario active el audio.
+            // También inicializamos audio sin reproducir aún
+            initAudio();
+
+            // añadir efecto hover y sonido opcional: no se pidió hover con sonido, pero los botones ya hacen click al presionar.
+            // Estilo extra: movimiento de onda cuando se enfoca
+            textarea.addEventListener('focus', () => {
+                playClickSound(880, 0.05, 0.08); // sonido muy sutil foco
+            });
+        })();
+    </script>
 </body>
 </html>
