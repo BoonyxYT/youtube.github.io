@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#11110f" />
+  <meta name="description" content="Un álbum privado, una sala y un concierto entre amigos." />
+  <title>LA SALA — Álbum privado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="wordmark" href="#top" aria-label="La Sala, inicio"><span class="mark">L<span>/</span>S</span><span>LA SALA<small>ARCHIVO MUSICAL PRIVADO</small></span></a>
+    <div class="top-meta"><span class="live-dot"></span><span>EDICIÓN ENTRE AMIGOS</span><span class="edition">N.º 001</span></div>
+    <button class="button button-ghost top-join" id="jumpToRoom">ENTRAR A UNA SALA <span>↗</span></button>
+  </header>
+
+  <main id="top">
+    <section class="intro">
+      <div class="eyebrow"><span class="eyebrow-line"></span> NO ESTÁ EN PLATAFORMAS. POR ALGO SERÁ.</div>
+      <h1>Un disco.<br><em>Una sala.</em> Vuestro<br class="mobile-break" /> propio espectáculo.</h1>
+      <p class="intro-copy">Un álbum clandestino para escuchar juntos. Tú llevas la mesa de mezclas; el resto, que sobreviva al concierto.</p>
+      <div class="intro-foot"><span>01 / ESCUCHAR</span><span>02 / JUGAR</span><span>03 / HACER EL RIDÍCULO</span></div>
+    </section>
+
+    <section class="stage-grid" aria-label="Álbum y reproductor">
+      <article class="cover-panel panel">
+        <div class="panel-head"><span>ARTE OFICIAL</span><span class="mini-index">LS—001</span></div>
+        <div class="cover-frame" id="coverFrame">
+          <img id="albumCover" src="assets/portada.jpg" alt="Portada oficial del álbum" />
+          <div class="cover-fallback" id="coverFallback"><span class="fallback-stamp">EDICIÓN<br />LIMITADA</span><div class="fallback-title">NO ESTÁ<br /><i>EN SPOTIFY</i></div><span class="fallback-note">PORTADA OFICIAL<br />COLOCAR EN /ASSETS/PORTADA.JPG</span></div>
+          <div class="cover-caption"><span>UNA PRODUCCIÓN<br />ABSOLUTAMENTE SERIA</span><span>© 20XX<br />TODOS LOS DERECHOS<br />Y EL SENTIDO COMÚN</span></div>
+        </div>
+        <div class="cover-bottom"><span><i class="tiny-star">✳</i> EL ÁLBUM OFICIAL DE VUESTRA PEOR IDEA</span><span>01/??</span></div>
+      </article>
+
+      <article class="player-panel panel">
+        <div class="panel-head"><span>REPRODUCCIÓN EN CABINA</span><span class="status-tag"><span class="live-dot"></span> DEMO</span></div>
+        <div class="player-content">
+          <div class="now-label"><span class="now-dot"></span> SONANDO AHORA</div>
+          <h2 id="trackTitle">Demo 01</h2>
+          <p class="track-subtitle" id="trackSubtitle">La primera prueba · Single promocional</p>
+          <div class="visualizer" id="visualizer" aria-label="Visualizador de música" role="img">
+            <div class="viz-glow"></div>
+            <div class="bars" id="bars"></div>
+            <span class="viz-label left">L</span><span class="viz-label right">R</span>
+          </div>
+          <div class="track-time"><span id="currentTime">00:00</span><span id="duration">00:00</span></div>
+          <input type="range" min="0" max="100" value="0" id="seek" aria-label="Posición de la canción" />
+          <div class="player-controls">
+            <button class="icon-button" id="restartBtn" aria-label="Volver al principio" title="Volver al principio">↺</button>
+            <button class="play-button" id="playBtn" aria-label="Reproducir canción"><span id="playIcon">▶</span></button>
+            <button class="icon-button" id="muteBtn" aria-label="Silenciar" title="Silenciar">◖))</button>
+            <div class="volume-wrap"><span>VOL.</span><input type="range" id="volume" min="0" max="1" step="0.01" value="0.8" aria-label="Volumen" /></div>
+          </div>
+          <div class="audio-note" id="audioNote"><span>↳</span> Añade tu canción a <code>assets/cancion-prueba.mp3</code> para activar el audio real.</div>
+          <audio id="audio" preload="metadata" src="assets/cancion-prueba.mp3"></audio>
+        </div>
+        <div class="player-footer"><span>FORMATO: MP3</span><span>REPRODUCCIÓN DE PRUEBA</span></div>
+      </article>
+    </section>
+
+    <section class="room-section" id="roomSection">
+      <div class="section-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> EL PUNTO DE ENCUENTRO</div><h2>Tu sala, <em>tus reglas.</em></h2></div><p>Reúne a la pandilla con un código. El anfitrión decide qué suena; todos viven las consecuencias.</p></div>
+      <div class="room-grid">
+        <article class="room-card panel">
+          <div class="panel-head"><span>01 / CONEXIÓN</span><span class="small-state" id="roomState">SIN SALA</span></div>
+          <div class="room-inner">
+            <div id="noRoomView">
+              <div class="room-symbol">⌘</div>
+              <h3>¿Montamos el concierto?</h3>
+              <p>Crea una sala y reparte el código, o entra en la de alguien que ya esté al mando.</p>
+              <button class="button button-accent full" id="createRoomBtn">＋ CREAR MI SALA</button>
+              <div class="or-divider"><span></span> O ENTRA CON UN CÓDIGO <span></span></div>
+              <form id="joinForm" class="join-form"><input id="roomCodeInput" maxlength="6" placeholder="CÓDIGO (6 CARACTERES)" aria-label="Código de sala" autocomplete="off" /><button class="button button-light" type="submit">ENTRAR ↗</button></form>
+              <p class="room-hint" id="joinHint" aria-live="polite">En esta primera maqueta, las salas son una simulación local.</p>
+            </div>
+            <div id="activeRoomView" hidden>
+              <div class="room-code-label">CÓDIGO DE INVITACIÓN</div>
+              <div class="room-code-row"><strong id="roomCodeDisplay">NOCHE7</strong><button class="copy-btn" id="copyCodeBtn" title="Copiar código">COPIAR ↗</button></div>
+              <div class="room-live-row"><span class="live-dot"></span><span id="roomLiveText">SALA CREADA EN ESTE NAVEGADOR</span></div>
+              <div class="people-head"><span>LA PANDILLA</span><span id="peopleCount">01 CONECTADO</span></div>
+              <div class="people-list" id="peopleList"><div class="person"><span class="avatar avatar-host">TÚ</span><span class="person-name">Anfitrión/a</span><span class="host-label">HOST</span></div></div>
+              <button class="button button-ghost full leave-btn" id="leaveRoomBtn">SALIR DE LA SALA</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="host-card panel">
+          <div class="panel-head"><span>02 / MESA DE MEZCLAS</span><span class="host-lock">⌑ SOLO HOST</span></div>
+          <div class="host-inner">
+            <div class="host-title"><div class="host-icon">✳</div><div><h3>Control del directo</h3><p>Elige qué escucha todo el mundo.</p></div></div>
+            <label class="field-label" for="trackSelect">SIGUIENTE TEMA</label>
+            <select id="trackSelect"><option value="demo">Demo 01 — La primera prueba</option></select>
+            <div class="queue-current"><span class="queue-art">♫</span><div><small>EN COLA</small><strong id="queueTitle">Demo 01</strong></div><span class="queue-number">01</span></div>
+            <button class="button button-accent full" id="setNextBtn">PONER COMO SIGUIENTE <span>↗</span></button>
+            <p class="host-hint" id="hostHint" aria-live="polite">El control compartido entre dispositivos se conectará en la siguiente fase.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="game-section">
+      <div class="section-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> MIENTRAS SUENA</div><h2>El concierto también <em>se juega.</em></h2></div><p>Cada canción puede tener su propio minijuego, con reglas, animaciones y pequeñas competiciones.</p></div>
+      <div class="game-grid">
+        <article class="game-card game-main panel" id="mainGame">
+          <div class="game-bg-shape"></div><div class="game-overline"><span>MINIJUEGO ACTIVO</span><span class="game-type" id="gameType">01 / REFLEJOS</span></div>
+          <div class="game-main-content"><div class="game-emoji" id="gameEmoji">✳</div><h3 id="gameTitle">Caza el <em>estribillo.</em></h3><p id="gameDescription">Cuando aparezca la señal, pulsa antes que nadie. Esta canción tiene su propia dinámica: aquí empieza el calentamiento.</p><button class="button button-light" id="gameActionBtn">PROBAR MINIJUEGO ↗</button><div class="game-result" id="gameResult" aria-live="polite"></div></div>
+          <div class="game-big-number" id="gameBigNumber">01</div>
+        </article>
+        <article class="game-card game-side panel"><div class="game-overline"><span>PRÓXIMAMENTE</span><span>02 / QUIZ</span></div><div class="side-illustration quiz-illus"><span>¿</span><span>?</span><span>!</span></div><h3>¿Quién conoce<br />mejor la letra?</h3><p>Preguntas absurdas inspiradas en cada tema y respuestas en directo.</p><span class="coming-tag">MODO EN DESARROLLO</span></article>
+        <article class="game-card game-side panel"><div class="game-overline"><span>PRÓXIMAMENTE</span><span>03 / BINGO</span></div><div class="side-illustration bingo-illus"><span>♪</span><span>✳</span><span>♫</span><span>★</span></div><h3>Bingo musical<br />de dudosa calidad.</h3><p>Marca los momentos más ridículos antes de que termine la canción.</p><span class="coming-tag">MODO EN DESARROLLO</span></article>
+      </div>
+    </section>
+
+    <section class="manifesto"><div class="manifesto-mark">✳</div><p>NO ES UN CONCIERTO PROFESIONAL.</p><h2>Es bastante<br /><em>peor. Y mejor.</em></h2><span>HECHO PARA POCAS PERSONAS Y MUCHAS ANÉCDOTAS.</span></section>
+  </main>
+
+  <footer class="footer"><a class="wordmark footer-mark" href="#top"><span class="mark">L<span>/</span>S</span><span>LA SALA<small>ARCHIVO MUSICAL PRIVADO</small></span></a><span>UNA BROMA CON DEMASIADA PRODUCCIÓN.</span><a href="#top" class="back-top">VOLVER ARRIBA ↑</a></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
