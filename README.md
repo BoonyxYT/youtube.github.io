@@ -1,37 +1,91 @@
-# LA SALA — prototipo de álbum-concierto
+# LA SALA
 
-Prototipo visual estático en español, preparado para personalizar y subir a un repositorio de GitHub. No necesita Node ni instalar dependencias: abre `index.html` en el navegador.
+Web de álbum/concierto para amigos: una portada, reproductor sincronizado, salas por código y control de reproducción reservado al anfitrión. Frontend estático (GitHub Pages) + Supabase para identidad anónima, base de datos, presencia y archivos privados.
 
-## Poner tu portada y canción
+## 1. Archivos del proyecto
 
-Copia los archivos definitivos en `assets/` con estos nombres exactos:
+- `index.html`: estructura de la web.
+- `styles.css`: diseño responsive.
+- `app.js`: reproductor, salas, sincronización y minijuego de reflejos.
+- `supabase-config.js`: URL del proyecto y clave pública de Supabase.
+- `supabase/schema.sql`: tablas, políticas RLS, funciones RPC, bucket privado y Realtime.
+- `assets/portada.jpg`: portada del álbum mostrada en la web.
 
-- `assets/portada.jpg` — portada del álbum. Se muestra con recorte adaptado al marco.
-- `assets/cancion-prueba.mp3` — canción de prueba.
+## 2. Preparar Supabase una sola vez
 
-Si la portada o la canción no están presentes, se verá una cubierta provisional y el reproductor mostrará un aviso. Puedes cambiar el título del tema y añadir canciones editando el objeto `tracks` de `app.js` y las opciones de `#trackSelect` en `index.html`.
+1. Crea un proyecto en [Supabase](https://supabase.com/).
+2. En **Authentication → Sign In / Providers**, activa **Anonymous Sign-Ins**. La web usa identidades anónimas para no exigir correo a tus amigos.
+3. Abre **SQL Editor**, pega y ejecuta el archivo `supabase/schema.sql`.
+4. En SQL Editor, ejecuta esta consulta por separado después de reemplazar `PON_AQUI_UNA_CLAVE_LARGA_Y_UNICA` por una clave propia. Usa esa misma clave en el campo **Clave de anfitrión** cuando crees una sala.
 
-## Qué funciona en esta primera maqueta
+```sql
+insert into private.app_config (setting_key, setting_value)
+values (
+  'host_password_hash',
+  extensions.crypt('PON_AQUI_UNA_CLAVE_LARGA_Y_UNICA', extensions.gen_salt('bf'))
+)
+on conflict (setting_key)
+do update set setting_value = excluded.setting_value;
+```
 
-- Diseño responsive con estilo de álbum/concierto.
-- Reproductor HTML de audio con play/pause, búsqueda, volumen y visualizador animado.
-- Flujo visual para crear una sala, entrar mediante código, copiar invitación y salir.
-- Mesa de mezclas de anfitrión y un minijuego de reacción de demostración.
+**No guardes la clave real en `README.md`, `app.js`, `supabase-config.js` ni en GitHub.** La base de datos conserva solo un hash. Solo tú necesitas esta clave para crear salas; los amigos entran con su código.
 
-## Importante: las salas son todavía una simulación local
+5. En **Project Settings / API** copia la Project URL y la **Publishable key** (o la clave `anon` heredada si tu proyecto todavía la usa). Pégalas en `supabase-config.js`:
 
-Esta maqueta no sincroniza a varias personas ni impide que alguien abra la página sin invitación. El botón de crear sala genera un código en el navegador, pero no existe aún un servidor que comparta el estado. No la anuncies como privada ni como un directo real en esta fase.
+```js
+window.LASALA_CONFIG = {
+  supabaseUrl: "https://TU-PROYECTO.supabase.co",
+  supabaseAnonKey: "TU_PUBLISHABLE_O_ANON_KEY"
+};
+```
 
-Para implementar las funciones reales, la propuesta es:
+La publishable/anon key está diseñada para usarse desde el navegador. La seguridad depende de las políticas RLS y las funciones SQL de este proyecto. **Nunca** uses una `service_role` key en el frontend.
 
-1. **Supabase Auth** para que solo tus amigos autorizados puedan entrar.
-2. **Supabase Realtime** para presencia de participantes y eventos de sala (cambio de canción, pausa, salto y estado del juego).
-3. **Base de datos con políticas RLS** para asegurar que solo el anfitrión controle la reproducción.
-4. **Almacenamiento privado o URLs firmadas** para los MP3 si no quieres que cualquiera con un enlace pueda escucharlos.
-5. **GitHub Pages** para servir el frontend; la visibilidad y la autenticación deben configurarse por separado.
+## 3. Subir audio y portada
 
-No pongas una clave `service_role` ni secretos del servidor en archivos del frontend o en el repositorio.
+- Sube la portada final a `assets/portada.jpg` en el repositorio.
+- En **Storage**, abre el bucket privado `album-audio` que crea el SQL y sube la canción de prueba con el nombre exacto `demo.mp3`.
+- El reproductor solicita una URL firmada temporal para el MP3 cuando un miembro entra en una sala; el audio no se sirve desde una ruta pública de GitHub Pages.
+- Para añadir canciones, sube cada MP3 al bucket `album-audio` y añade una entrada al objeto `TRACKS` en `app.js`, por ejemplo:
 
-## Publicarlo en GitHub Pages
+```js
+tema02: {
+  title: 'Tema 02',
+  subtitle: 'Segundo single',
+  storagePath: 'tema02.mp3',
+  game: {
+    type: 'QUIZ',
+    emoji: '？',
+    title: '¿Te sabes <em>la letra?</em>',
+    description: 'Responde antes que el resto.'
+  }
+}
+```
 
-Sube el contenido del proyecto a la rama principal. En GitHub ve a **Settings → Pages** y elige la fuente de despliegue apropiada para tu repositorio. GitHub Pages sirve ficheros estáticos; no proporciona por sí solo sesiones, una base de datos ni sincronización en tiempo real.
+El `storagePath` debe coincidir exactamente con el nombre/ruta del objeto en Storage. Cada tema puede definir su propio tipo, icono, título y descripción de minijuego.
+
+## 4. Probarlo y publicarlo
+
+1. Sube la carpeta `album-sala` al repositorio de GitHub.
+2. Activa **Settings → Pages** en ese repositorio.
+3. Abre la URL publicada. Si cambiaste el nombre del repositorio o la ruta base, asegúrate de que las rutas relativas (`styles.css`, `app.js`, `assets/...`) se conservan.
+4. Para probar localmente, ejecuta desde la carpeta del proyecto `python -m http.server 8000` y abre `http://localhost:8000`.
+5. Introduce tu nombre y clave de anfitrión para crear una sala. Copia el código/enlace y envíaselo al grupo. Tus amigos introducen su nombre y el código, sin necesitar la clave del anfitrión.
+
+## Qué hace esta versión
+
+- Crea salas compartidas con códigos de 10 caracteres.
+- Muestra participantes conectados mediante Supabase Realtime Presence.
+- Permite elegir la siguiente canción en directo mientras el tema actual sigue sonando; al terminar, la sala cambia al tema elegido. El anfitrión también puede reproducir, pausar, volver al inicio y buscar en la canción.
+- Propaga el tema y el estado de reproducción a los invitados, con corrección periódica de desfases.
+- Protege las filas de salas con RLS: los miembros solo pueden leer su sala y únicamente el anfitrión puede actualizar la reproducción.
+- Conserva los MP3 en un bucket privado y entrega URLs firmadas temporales a los miembros.
+- Incluye un minijuego de reflejos cuyo texto/tipo se define por canción.
+
+## Límites que conviene saber
+
+- Los navegadores pueden bloquear el audio iniciado a distancia hasta que cada invitado pulse **Activar audio** una vez. El anfitrión debe iniciar la reproducción desde su navegador.
+- La web estática publicada en GitHub Pages sigue siendo accesible públicamente y la portada de `assets/portada.jpg` también. Las salas y los MP3 están protegidos, pero si necesitas ocultar incluso la portada y toda la web, tendrás que usar una capa de acceso antes de servir el frontend (GitHub Pages por sí solo no es una barrera de autenticación).
+- El código de invitación funciona como credencial para unirse: compártelo solo con tus amigos. La clave de anfitrión protege la creación de salas; guárdala en privado.
+- Las URLs firmadas del audio expiran. Para una sesión muy larga, vuelve a cargar el tema si un archivo deja de reproducirse.
+- Si Supabase Realtime no conecta, comprueba que las tablas `rooms` y `room_members` estén incluidas en la publicación `supabase_realtime`.
