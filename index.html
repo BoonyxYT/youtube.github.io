@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0d0e0d" />
+  <meta name="description" content="Una sala privada para preparar y escuchar un álbum en directo con amigos." />
+  <title>LA SALA 4.4</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=4.4" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="wordmark" href="#top" aria-label="La Sala, inicio"><span class="mark">L<span>/</span>S</span><span>LA SALA</span></a>
+    <div class="top-status"><span class="live-dot"></span><span id="connectionLabel">SIN CONECTAR</span></div>
+    <button class="button button-ghost" id="jumpToRoom">ENTRAR EN UNA SALA <span>↗</span></button>
+  </header>
+
+  <main id="top">
+    <section class="entry-wrap" id="roomSection">
+      <div class="entry-copy">
+        <div class="eyebrow"><span class="eyebrow-line"></span> ESCUCHA PRIVADA</div>
+        <h1>La música<br /><em>nos junta.</em></h1>
+        <p>Entra con tus amigos y escucha lo que el anfitrión ponga.</p>
+      </div>
+      <article class="entry-card panel">
+        <div class="panel-head"><span>ENTRAR / CREAR SALA</span><span class="mini-dot"></span></div>
+        <div class="entry-content" id="noRoomView">
+          <label class="field-label" for="displayNameInput">TU NOMBRE</label>
+          <input class="text-input" id="displayNameInput" maxlength="24" placeholder="Cómo te llamas" autocomplete="nickname" />
+          <div class="host-password-wrap">
+            <label class="field-label" for="hostPasswordInput">CLAVE DE ANFITRIÓN · SOLO TÚ</label>
+            <input class="text-input" id="hostPasswordInput" type="password" maxlength="128" placeholder="Tu clave privada" autocomplete="current-password" />
+            <button class="button button-accent full" id="createRoomBtn">CREAR SALA</button>
+          </div>
+          <div class="or-divider"><span></span> O ENTRA CON CÓDIGO <span></span></div>
+          <form id="joinForm" class="join-form">
+            <input id="roomCodeInput" maxlength="10" placeholder="CÓDIGO DE SALA" aria-label="Código de sala" autocomplete="off" />
+            <button class="button button-light" type="submit">ENTRAR ↗</button>
+          </form>
+          <p class="entry-hint" id="joinHint" aria-live="polite">Escribe tu nombre para empezar.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="concert-view" id="concertView" hidden>
+      <div class="concert-backdrop" aria-hidden="true"></div>
+      <div class="concert-shell" id="activeRoomView" hidden>
+        <header class="concert-topline">
+          <div class="room-live"><span class="live-dot"></span><span id="roomLiveText">CONECTANDO…</span><span class="role-pill" id="roomState">INVITADO</span></div>
+          <div class="concert-actions">
+            <span class="invite-code" id="roomCodeDisplay">----------</span>
+            <button class="small-action" id="copyCodeBtn" title="Copiar enlace de invitación">INVITAR <span>↗</span></button>
+            <button class="small-action my-color-shortcut" id="myColorButton" type="button" title="Cambiar el color de tu cubo"><span class="my-color-dot" id="myColorShortcutDot" aria-hidden="true"></span> MI COLOR</button>
+            <button class="small-action people-trigger" id="peopleButton"><span class="people-glyph">◉</span> GENTE <span class="people-counter" id="peopleCount">0</span></button>
+            <button class="small-action leave-action" id="leaveRoomBtn" title="Salir de la sala">SALIR</button>
+          </div>
+        </header>
+
+        <section class="pre-show-view" id="preShowView" aria-label="Preparar el concierto" hidden>
+          <div class="pre-show-album-column">
+            <div class="pre-show-art-glow" aria-hidden="true"></div>
+            <div class="pre-show-art-frame">
+              <img id="preShowAlbumCover" src="assets/portada-album.png" alt="Portada del álbum LA SALA" />
+              <div class="pre-show-art-fallback" id="preShowAlbumFallback" hidden>
+                <span class="pre-show-fallback-mark">L / S</span>
+                <small>AÑADE assets/portada-album.png</small>
+              </div>
+            </div>
+            <div class="pre-show-album-title">
+              <span class="eyebrow"><span class="eyebrow-line"></span> ÁLBUM</span>
+              <h1 id="albumTitle">LA SALA</h1>
+              <p>Una escucha privada, en directo con tus amigos.</p>
+            </div>
+          </div>
+          <aside class="pre-show-setup panel">
+            <div class="panel-head"><span>ANTES DE EMPEZAR</span><span class="mini-dot"></span></div>
+            <div class="pre-show-setup-body">
+              <div class="pre-show-ready"><span class="pre-show-ready-icon">♫</span><div><strong>Todo preparado</strong><p id="preShowMessage">Activa el sonido y elige el color de tu cubo. El anfitrión comenzará el concierto.</p></div></div>
+              <button id="preEnableAudioBtn" class="button button-light full pre-enable-audio" type="button">ACTIVAR SONIDO</button>
+              <p class="pre-show-audio-status" id="preShowAudioStatus" aria-live="polite">Pulsa una vez para permitir que el navegador reproduzca la música.</p>
+              <div class="pre-show-setup-divider"></div>
+              <div id="preShowColorSlot"></div>
+              <p class="pre-show-footer">Puedes cambiar tu color más tarde. Solo tú controlas tu volumen.</p>
+            </div>
+          </aside>
+        </section>
+
+        <section class="now-playing" id="nowPlayingSection" aria-label="Canción actual" hidden>
+          <div class="art-area">
+            <div class="art-glow"></div>
+            <div class="art-frame" id="coverFrame">
+              <img id="albumCover" src="assets/portada-demo.png" alt="Portada de la canción" />
+              <div class="cover-fallback" id="coverFallback"><span class="fallback-mark">L / S</span><div>LA<br /><em>SALA</em></div><small>AÑADE TU PORTADA EN assets/portada-demo.png</small></div>
+            </div>
+          </div>
+          <div class="track-card">
+            <div class="track-eyebrow"><span class="equalizer-mark" id="visualizer"><span></span><span></span><span></span><span></span><span></span></span><span id="playbackStatus">EN ESPERA</span></div>
+            <h1 id="trackTitle">Cuack.</h1>
+            <p id="trackSubtitle"></p>
+            <div class="ambient-progress" aria-hidden="true"><span id="guestProgressFill"></span></div>
+            <div class="track-times"><span id="currentTime">00:00</span><span id="duration">00:00</span></div>
+            <p class="audio-note" id="audioNote" aria-live="polite">Conectando la reproducción…</p>
+            <button id="enableAudioBtn" class="button button-light enable-audio" hidden>ACTIVAR AUDIO</button>
+            <div class="local-volume" id="localVolumeControl"><label for="volume">TU VOLUMEN</label><input type="range" id="volume" min="0" max="1" step="0.01" value="0.8" aria-label="Tu volumen local" /><span id="volumeValue">80%</span></div>
+            <audio id="audio" preload="metadata"></audio>
+          </div>
+        </section>
+
+        <section class="host-console" id="hostControls" hidden>
+          <div class="console-title"><div><div class="eyebrow"><span class="eyebrow-line"></span> MESA DEL ANFITRIÓN</div><h2>Control de la sesión</h2></div><span class="host-only-chip">SOLO TÚ</span></div>
+          <div class="console-grid">
+            <div class="track-picker">
+              <label class="field-label" for="trackSelect">SIGUIENTE CANCIÓN</label>
+              <select id="trackSelect"><option value="demo">Cuack.</option></select>
+              <div class="queue-current"><span class="queue-art">♫</span><div><small>EN COLA</small><strong id="queueTitle">Sin siguiente tema</strong></div></div>
+              <div class="console-buttons"><button class="button button-ghost" id="setNextBtn">PONER SIGUIENTE</button><button class="button button-accent" id="playSelectedNowBtn">REPRODUCIR AHORA</button></div>
+              <p class="host-hint" id="hostHint" aria-live="polite">Solo tú puedes cambiar la música.</p>
+              <div class="theme-control" id="themeControl">
+                <div class="theme-control-head">
+                  <div><label class="field-label" for="themeColorPicker">COLOR DE LA CANCIÓN</label><p>El cambio se aplica a toda la sala en directo.</p></div>
+                  <span class="theme-live-chip"><span class="live-dot"></span> EN VIVO</span>
+                </div>
+                <div class="theme-control-row">
+                  <input id="themeColorPicker" type="color" value="#68caff" aria-label="Elegir color de la canción" />
+                  <output id="themeColorHex" for="themeColorPicker">#68CAFF</output>
+                  <button type="button" class="button button-ghost theme-reset" id="resetThemeColorBtn">COLOR ORIGINAL</button>
+                </div>
+                <div class="theme-swatches" id="themeColorSwatches" aria-label="Colores rápidos">
+                  <button type="button" class="theme-swatch is-selected" data-theme-color="#68caff" style="--swatch:#68caff" aria-label="Azul claro" title="Azul claro"></button>
+                  <button type="button" class="theme-swatch" data-theme-color="#d6ff62" style="--swatch:#d6ff62" aria-label="Verde lima" title="Verde lima"></button><button type="button" class="theme-swatch" data-theme-color="#5ee7ff" style="--swatch:#5ee7ff" aria-label="Cian" title="Cian"></button>
+                  <button type="button" class="theme-swatch" data-theme-color="#a78bfa" style="--swatch:#a78bfa" aria-label="Violeta" title="Violeta"></button>
+                  <button type="button" class="theme-swatch" data-theme-color="#ff72b6" style="--swatch:#ff72b6" aria-label="Rosa" title="Rosa"></button>
+                  <button type="button" class="theme-swatch" data-theme-color="#ffad66" style="--swatch:#ffad66" aria-label="Naranja" title="Naranja"></button>
+                  <button type="button" class="theme-swatch" data-theme-color="#f5f5f5" style="--swatch:#f5f5f5" aria-label="Blanco" title="Blanco"></button>
+                </div>
+                <p class="theme-control-hint" id="themeColorHint" aria-live="polite">Los invitados verán este color automáticamente.</p>
+              </div>
+            </div>
+            <div class="playback-console">
+              <div class="console-label">REPRODUCCIÓN PARA TODOS</div>
+              <div class="host-play-buttons"><button class="icon-button" id="restartBtn" title="Volver al principio" aria-label="Volver al principio">↺</button><button class="play-button" id="playBtn" title="Reproducir o pausar para todos" aria-label="Reproducir para todos"><span id="playIcon">▶</span></button><button class="icon-button" id="skipBtn" title="Pasar a la siguiente canción" aria-label="Pasar a la siguiente canción" disabled>↠</button></div>
+              <div class="host-seek"><input type="range" id="seek" min="0" max="100" value="0" aria-label="Posición de la canción" /></div>
+              <p>Los cambios de esta mesa se sincronizan con todos los invitados.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="game-section" id="gameSection" hidden>
+          <div class="game-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> MINIJUEGO COMPARTIDO · <span id="gameType">REFLEJOS</span></div><h2 id="gameTitle">Mueve tu cubo.</h2></div><p id="gameDescription">Arrastra por la pista o usa las flechas. Todos veis los movimientos en directo.</p></div>
+          <div id="gameColorSlot"></div>
+          <div class="game-tools" id="playerSetupTools">
+            <div class="player-color-control" id="playerColorControl">
+              <div class="player-color-copy"><label for="cubeColorPicker">COLOR DE TU CUBO</label><small>El color solo cambia tu cubo y lo verán los demás.</small></div>
+              <input id="cubeColorPicker" type="color" value="#5ee7ff" aria-label="Elegir el color de tu cubo" />
+              <output id="cubeColorHex" for="cubeColorPicker">#5EE7FF</output>
+              <div class="player-color-swatches" id="cubeColorSwatches" aria-label="Colores rápidos para tu cubo">
+                <button type="button" class="player-color-swatch is-selected" data-player-color="#5ee7ff" style="--player-swatch:#5ee7ff" aria-label="Cian" title="Cian"></button>
+                <button type="button" class="player-color-swatch" data-player-color="#d6ff62" style="--player-swatch:#d6ff62" aria-label="Verde lima" title="Verde lima"></button>
+                <button type="button" class="player-color-swatch" data-player-color="#ff72b6" style="--player-swatch:#ff72b6" aria-label="Rosa" title="Rosa"></button>
+                <button type="button" class="player-color-swatch" data-player-color="#a78bfa" style="--player-swatch:#a78bfa" aria-label="Violeta" title="Violeta"></button>
+                <button type="button" class="player-color-swatch" data-player-color="#ffad66" style="--player-swatch:#ffad66" aria-label="Naranja" title="Naranja"></button>
+                <button type="button" class="player-color-swatch" data-player-color="#6ee7a8" style="--player-swatch:#6ee7a8" aria-label="Verde menta" title="Verde menta"></button>
+                <button type="button" class="player-color-swatch" data-player-color="#ff6b6b" style="--player-swatch:#ff6b6b" aria-label="Rojo coral" title="Rojo coral"></button>
+                <button type="button" class="player-color-swatch" data-player-color="#f5f5f5" style="--player-swatch:#f5f5f5" aria-label="Blanco" title="Blanco"></button>
+              </div>
+            </div>
+            <p id="cubeColorHint" aria-live="polite">Todos verán el color que elijas.</p>
+          </div>
+          <div class="cube-arena" id="cubeArena" tabindex="0" role="application" aria-label="Minijuego compartido. Arrastra para mover tu cubo o usa las flechas del teclado.">
+            <div class="arena-grid" aria-hidden="true"></div><div class="arena-orb orb-one" aria-hidden="true"></div><div class="arena-orb orb-two" aria-hidden="true"></div>
+            <div class="betting-table-surface" id="bettingTableSurface" hidden aria-hidden="true">
+              <div class="betting-table-inset">
+                <div class="betting-table-brand">TODO AL ROJO <span id="bettingRoundTable">RONDA 1</span></div>
+                <div class="betting-table-cards"><span class="table-playing-card table-card-red">♥</span><span class="table-playing-card table-card-black">♠</span><span class="table-playing-card table-card-red">♦</span></div>
+                <div class="betting-table-pot"><small>BOTE DE FICHAS VIRTUALES</small><strong id="bettingPotTable">0</strong></div>
+                <div class="betting-table-result" id="bettingTableResult">LA SUERTE ESTÁ EN JUEGO</div>
+              </div>
+            </div>
+            <div class="shared-objects-layer" id="sharedObjectsLayer" aria-label="Objetos empujables compartidos"></div><div class="cube-layer" id="cubeLayer"></div>
+            <div class="arena-hint"><span class="key-cap">↑</span><span class="key-cap">←</span><span class="key-cap">↓</span><span class="key-cap">→</span><span>o arrastra en la pista</span></div>
+          </div>
+          <section class="betting-controls" id="bettingControls" hidden aria-label="Mesa de apuestas con fichas virtuales">
+            <div class="betting-controls-main">
+              <div class="betting-panel-heading"><div class="eyebrow"><span class="eyebrow-line"></span> MESA CENTRAL · TODO AL ROJO</div><h3>Apuesta mientras suena.</h3><p>Solo fichas virtuales: no hay dinero real ni compras.</p></div>
+              <div class="betting-balance"><span>TUS FICHAS</span><strong id="bettingBalance">100</strong><small id="bettingBalanceNote">Fichas de juego</small></div>
+              <div class="betting-wager">
+                <div class="betting-section-label">ELIGE TU APUESTA</div>
+                <div class="betting-side-options" role="group" aria-label="Elegir color de la apuesta">
+                  <button type="button" class="betting-side is-selected" data-bet-side="red"><span>♥</span> ROJO</button>
+                  <button type="button" class="betting-side" data-bet-side="black"><span>♠</span> NEGRO</button>
+                </div>
+                <div class="betting-section-label">FICHAS A APOSTAR</div>
+                <div class="betting-amount-options" role="group" aria-label="Elegir cantidad de fichas">
+                  <button type="button" class="betting-amount is-selected" data-bet-amount="10">10</button>
+                  <button type="button" class="betting-amount" data-bet-amount="25">25</button>
+                  <button type="button" class="betting-amount" data-bet-amount="50">50</button>
+                </div>
+                <button id="placeBetBtn" class="button button-accent full" type="button">APOSTAR 10 AL ROJO</button>
+                <div class="betting-host-actions" id="bettingHostControls" hidden>
+                  <button id="revealBetBtn" class="button button-light" type="button">REVELAR CARTA</button>
+                  <button id="newBettingRoundBtn" class="button button-ghost" type="button" hidden>NUEVA RONDA</button>
+                </div>
+                <p id="bettingStatus" class="betting-status" aria-live="polite">Elige rojo o negro y apuesta tus fichas virtuales.</p>
+              </div>
+            </div>
+            <div class="betting-bets-board"><div class="betting-bets-heading"><span>APUESTAS DE LA SALA</span><span id="bettingRoundControl">RONDA 1</span></div><div id="bettingBetsList" class="betting-bets-list"><p class="betting-empty">Todavía no hay apuestas.</p></div></div>
+          </section>
+        </section>
+      </div>
+
+      <div class="people-modal" id="peopleModal" hidden>
+        <button class="modal-scrim" id="closePeopleBackdrop" aria-label="Cerrar lista de participantes"></button>
+        <section class="people-dialog" role="dialog" aria-modal="true" aria-labelledby="peopleTitle">
+          <header class="people-dialog-head"><div><div class="eyebrow"><span class="eyebrow-line"></span> LA SALA</div><h2 id="peopleTitle">Conectados</h2></div><button class="close-modal" id="closePeopleButton" aria-label="Cerrar">×</button></header>
+          <div class="people-subline"><span class="live-dot"></span><span id="peopleModalSubline">Personas en esta sala</span></div>
+          <div class="people-list" id="peopleList"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="app.js?v=4.4"></script>
+</body>
+</html>
